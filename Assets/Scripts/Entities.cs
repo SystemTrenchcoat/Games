@@ -25,7 +25,11 @@ public class Entities : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //Debug.Log(health);
+        Debug.Log(health);
+        if (health <= 0)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     public void changeDirection(string dir)

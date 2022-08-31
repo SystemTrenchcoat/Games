@@ -117,8 +117,8 @@ public class Enemy : MonoBehaviour
             {
                 Debug.Log("No wall\n" + i);
                 var collider = Physics2D.OverlapCircle(next, .5f);
-                //is the next position occupied by anyonw? if yes, player or enemy? if player, change to attack, if enemy, return current position, if neither, return next coordinate
-                if (collider != null && collider.GetComponent<BoxCollider2D>() != null && collider.GetComponent<BoxCollider2D>() != rb.GetComponent<BoxCollider2D>())
+                //is the next position occupied by anyone? if yes, player or enemy? if player, change to attack, if enemy, return current position, if neither, return next coordinate
+                if (collider != null && collider.GetComponent<BoxCollider2D>() != null && collider.GetComponent<BoxCollider2D>())// != rb.GetComponent<BoxCollider2D>())
                 {
                     Debug.Log("Something near...");
                     if (collider.CompareTag("Player"))

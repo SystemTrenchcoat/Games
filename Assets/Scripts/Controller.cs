@@ -68,7 +68,8 @@ public class Controller : MonoBehaviour
         }
         //Debug.Log(entity.direction);
 
-        if(!NextTile(barriers))
+        var collider = Physics2D.OverlapCircle(new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, 0), .5f);
+        if (!(NextTile(barriers)) && collider == null || !(NextTile(barriers)) && collider != null && collider.GetComponent<BoxCollider2D>() == null)
         {
             gameObject.transform.Translate(new Vector3(xOffset, yOffset, 0));
         }
