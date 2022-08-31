@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Random = UnityEngine.Random;
 
 public class Enemy : MonoBehaviour
 {
@@ -24,6 +26,9 @@ public class Enemy : MonoBehaviour
     public float xOffset = 0;
     public float yOffset = -1f;
 
+    public int[] xs = {1,0,-1,0};
+    public int[] ys = {0, 1, 0, -1};
+
 
     // Start is called before the first frame update
     void Start()
@@ -43,15 +48,15 @@ public class Enemy : MonoBehaviour
     {
         if (timer <= 0)
         {
-            Debug.Log("Something");
+            //Debug.Log("Something");
             DecideAction();
             entity.isAttacking = false;
 
             if (nextAction == Action.Attack)
             {
-                Debug.Log("Attack");
+                //Debug.Log("Attack");
                 entity.isAttacking = true;
-                Debug.Log(xOffset + "\n" + yOffset);
+                //Debug.Log(xOffset + "\n" + yOffset);
                 Instantiate(attack, new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, 0), Quaternion.identity);
                 timer = actionDelay;
             }
@@ -74,67 +79,62 @@ public class Enemy : MonoBehaviour
     private void DecideAction()
     {
         Action act = Action.Move;
+
+        bool skip = false;
+        Vector3 check;
         Vector3 next;
 
         List<Vector3> locations = new List<Vector3>();
 
-        float x = 0;
-        float y = 0;
+        //string[] directions = { "Down", "Up", "Right", "Left"};
 
-        string[] directions = { "Down", "Up", "Right", "Left"};
-
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < xs.Length; i++)
         {
-            if (i == 0)
-            {
-                x = 0;
-                y = -1;
-            }
+            int x = xs[i];
+            int y = ys[i];
 
-            else if (i == 1)
-            {
-                x = 0;
-                y = 1;
-            }
-
-            else if (i == 2)
-            {
-                x = 1;
-                y = 0;
-            }
-
-            else if (i == 3)
-            {
-                x = -1;
-                y = 0;
-            }
-
-            next = new Vector3(transform.position.x + x, transform.position.y + y, 0);
+            //Debug.Log(Mathf.Sign(x)+ " " + Mathf.Sign(y));
+            check = new Vector3(transform.position.x + x, transform.position.y + y, 0);
+            next = new Vector3(transform.position.x + Math.Sign(x), transform.position.y + Math.Sign(y), 0);
             Vector3Int barrierMapTile = barriers.WorldToCell(next);
 
             //is next tile a wall? if no, return coordinate, if yes, return current position
             if (barriers.GetTile(barrierMapTile) == null)
             {
-                Debug.Log("No wall\n" + i);
-                var collider = Physics2D.OverlapCircle(next, .5f);
+                //Debug.Log("No wall\n" + i);
+                var collider = Physics2D.OverlapCircle(check, .5f);
                 //is the next position occupied by anyone? if yes, player or enemy? if player, change to attack, if enemy, return current position, if neither, return next coordinate
                 if (collider != null && collider.GetComponent<BoxCollider2D>() != null && collider.GetComponent<BoxCollider2D>())// != rb.GetComponent<BoxCollider2D>())
                 {
-                    Debug.Log("Something near...");
+                    //Debug.Log("Something near...");
                     if (collider.CompareTag("Player"))
                     {
-                        act = Action.Attack;
-                        entity.changeDirection(i);
-                        xOffset = x;
-                        yOffset = y;
-                        //i = 10; //end loop
-                        Debug.Log("Enemy near");
+                        if (check == next)
+                        {
+                            act = Action.Attack;
+                            entity.changeDirection(i);
+                            xOffset = Math.Sign(x);
+                            yOffset = Math.Sign(y);
+                            //i = 10; //end loop
+                            //Debug.Log(xOffset + " " + yOffset);
+                        }
+
+                        else
+                        {
+                            act = Action.Move;
+                            skip = true;
+                            entity.changeDirection(i);
+                            xOffset = Math.Sign(x);
+                            yOffset = Math.Sign(y);
+                            //i = 10; //end loop
+                            //Debug.Log(xOffset + " " + yOffset);
+                        }
                     }
 
                     else
                     {
                         next = new Vector3(transform.position.x, transform.position.y, 0);
-                        Debug.Log("Ally near\n" + collider);
+                        //Debug.Log("Ally near\n" + collider);
                     }
                     //change direction to this direction and attack
                 }
@@ -142,21 +142,22 @@ public class Enemy : MonoBehaviour
                 else
                 {
                     locations.Add(next);
-                    Debug.Log(next);
+                    //Debug.Log(next);
                 }
             }
 
             else
             {
                 next = new Vector3(transform.position.x, transform.position.y, 0);
-                Debug.Log("There's a wall");
+                //Debug.Log("There's a wall");
             }
         }
 
-        if (act == Action.Move)
+        if (act == Action.Move && !skip)
         {
             if (locations.Count > 0)
             {
+                //Debug.Log(xOffset + " " + yOffset);
                 nextLocation = locations[Random.Range(0, locations.Count)];
                 entity.changeDirection(locations.IndexOf(nextLocation));
                 xOffset = nextLocation.x - transform.position.x;
@@ -165,7 +166,7 @@ public class Enemy : MonoBehaviour
             else
             {
                 nextLocation = new Vector3(transform.position.x, transform.position.y, 0);
-                Debug.Log(nextLocation);
+                //Debug.Log(nextLocation);
             }
         }
 
@@ -174,9 +175,9 @@ public class Enemy : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(new Vector3(transform.position.x + 1, transform.position.y + 0, 0), .3f);
-        Gizmos.DrawSphere(new Vector3(transform.position.x + -1, transform.position.y + 0, 0), .3f);
-        Gizmos.DrawSphere(new Vector3(transform.position.x + 0, transform.position.y + 1, 0), .3f);
-        Gizmos.DrawSphere(new Vector3(transform.position.x + 0, transform.position.y + -1, 0), .3f);
+        Gizmos.DrawSphere(new Vector3(transform.position.x + 2, transform.position.y + 0, 0), .3f);
+        Gizmos.DrawSphere(new Vector3(transform.position.x + -2, transform.position.y + 0, 0), .3f);
+        Gizmos.DrawSphere(new Vector3(transform.position.x + 0, transform.position.y + 2, 0), .3f);
+        Gizmos.DrawSphere(new Vector3(transform.position.x + 0, transform.position.y + -2, 0), .3f);
     }
 }

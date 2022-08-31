@@ -137,7 +137,7 @@ public class Controller : MonoBehaviour
         //is next tile a wall? if no, return coordinate, if yes, return current position
         if (barriers.GetTile(tilesMapTile) == null)
         {
-            Debug.Log("No wall\n");
+            //Debug.Log("No wall\n");
             tileExist = false;
         }
 

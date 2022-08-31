@@ -18,14 +18,14 @@ public class Damage : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("Start");
+        //Debug.Log("Start");
         
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        Debug.Log("Scream");
+        //Debug.Log("Scream");
         gameObject.transform.Translate(new Vector3(xOffset, yOffset, 0) * speed);
         //Debug.Log(xOffset + "\n" + yOffset);
         if (count <=  0)
@@ -37,7 +37,7 @@ public class Damage : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Collision");
+        //Debug.Log("Collision");
         //findAttacker();
         if (collision.GetComponent<Entities>() != null && collision.GetComponent<GameObject>() != attacker)
         {
