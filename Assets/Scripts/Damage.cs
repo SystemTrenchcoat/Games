@@ -5,10 +5,14 @@ using UnityEngine;
 public class Damage : MonoBehaviour
 {
     public enum Direction { Up, Down, Left, Right };
-    public GameObject attacker;
+    public enum Type { Melee, Ranged };
+    public Entities attacker;
 
     public Direction direction;// = Direction.Down;
+    public Type type;
     public int damage;// = 5;
+    public float dCooldown;
+    public float dCount;
     public float cooldown;// = 1f;
     public float count;// = 1f;
     public float speed;// = .2f;
@@ -18,8 +22,10 @@ public class Damage : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //Debug.Log("Start");
-        
+        //changeDirection(attacker.GetComponent<Entities>().direction.ToString());
+        //Debug.Log(direction);
+        //Debug.Log(attacker.GetComponent<Entities>().direction);
+        findAttacker();
     }
 
     // Update is called once per frame
@@ -27,24 +33,28 @@ public class Damage : MonoBehaviour
     {
         //Debug.Log("Scream");
         gameObject.transform.Translate(new Vector3(xOffset, yOffset, 0) * speed);
-        //Debug.Log(xOffset + "\n" + yOffset);
+        Debug.Log(xOffset + "\n" + yOffset);
         if (count <=  0)
         {
-            Destroy(this.gameObject);
+            //Destroy(this.gameObject);
         }
         count -= Time.deltaTime;
+        dCount -= Time.deltaTime;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //Debug.Log("Collision");
         //findAttacker();
-        if (collision.GetComponent<Entities>() != null && collision.GetComponent<GameObject>() != attacker)
+        if (collision.GetComponent<Entities>() != null && collision.GetComponent<Entities>() != attacker && dCount <= 0)
         {
-            Debug.Log("Hit " + collision);
             Entities entity = collision.GetComponent<Entities>();
             entity.Damage(damage);
+            dCount = dCooldown;
+            //Debug.Log(entity.health);
         }
+
+        GameObject.Destroy(this.gameObject);
     }
 
     private void findAttacker()
@@ -64,10 +74,10 @@ public class Damage : MonoBehaviour
                 {
                     closestDistanceSqr = dSqrToAttacker;
                     attack = potentialAttacker;
-                    attacker = attack.GetComponent<GameObject>();
-                    Debug.Log(attack.direction.ToString());
+                    attacker = attack;
+                    //Debug.Log(attack.GetComponent<Transform>());
                     changeDirection(attack.direction.ToString());
-                    Debug.Log(attack);
+                    //Debug.Log(attack);
                 }
             }
         }

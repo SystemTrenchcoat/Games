@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 
 public class Enemy : MonoBehaviour
 {
-    public enum Action { Move, Attack };
+    public enum Action { Move, Attack, Defend };
 
     Entities entity;
     Rigidbody2D rb;

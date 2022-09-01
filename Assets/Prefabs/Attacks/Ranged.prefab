@@ -8,12 +8,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -564808267373630557, guid: e709d953f15f45d4a873b4895f175520, type: 3}
+      propertyPath: type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -564808267373630557, guid: e709d953f15f45d4a873b4895f175520, type: 3}
       propertyPath: count
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -564808267373630557, guid: e709d953f15f45d4a873b4895f175520, type: 3}
       propertyPath: speed
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -564808267373630557, guid: e709d953f15f45d4a873b4895f175520, type: 3}
+      propertyPath: dCount
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -564808267373630557, guid: e709d953f15f45d4a873b4895f175520, type: 3}
       propertyPath: cooldown
@@ -112,7 +120,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d703fe923a0153438a586ba37f421c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attacker: {fileID: 0}
+  direction: 0
+  type: 0
   damage: 5
+  dCooldown: 1
+  dCount: 1
   cooldown: 1
   count: 1
   speed: 0.2
+  xOffset: 0
+  yOffset: 0
