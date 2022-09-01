@@ -29,6 +29,7 @@ public class Enemy : MonoBehaviour
     public int[] xs = {1,0,-1,0};
     public int[] ys = {0, 1, 0, -1};
 
+    public bool canDefend = false;
 
     // Start is called before the first frame update
     void Start()
@@ -46,19 +47,28 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //Debug.Log(playerLocation.x + " " + transform.position.x + entity.defendDirectionOffsetX());
+        //if (canDefend && (playerLocation.x == transform.position.x + entity.defendDirectionOffsetX() ||
+        //    playerLocation.y == transform.position.y + entity.defendDirectionOffsetY()))
+        //{
+        //    nextAction = Action.Defend;
+        //    entity.isDefending = true;  
+        //}
+        DecideBlock();
+
         if (timer <= 0)
         {
             //Debug.Log("Something");
             DecideAction();
             entity.isAttacking = false;
 
+            //Debug.Log(nextAction);
             if (nextAction == Action.Attack)
             {
                 //Debug.Log("Attack");
                 entity.isAttacking = true;
                 //Debug.Log(xOffset + "\n" + yOffset);
                 Instantiate(attack, new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, 0), Quaternion.identity);
-                timer = actionDelay;
             }
 
             //gradually moves enemy to location
@@ -66,10 +76,14 @@ public class Enemy : MonoBehaviour
             {
                 gameObject.transform.Translate(new Vector3(xOffset, yOffset, 0));
                 //if (Vector3.Distance(transform.position, nextLocation) <= 0)
-                    timer = actionDelay;
             }
 
-            
+            else if (nextAction == Action.Defend)
+            {
+                entity.isDefending = true;
+            }
+
+            timer = actionDelay;
         }
 
         //Debug.Log(timer);
@@ -80,6 +94,7 @@ public class Enemy : MonoBehaviour
     {
         Action act = Action.Move;
 
+        entity.isDefending = false;
         bool skip = false;
         Vector3 check;
         Vector3 next;
@@ -92,6 +107,11 @@ public class Enemy : MonoBehaviour
         {
             int x = xs[i];
             int y = ys[i];
+            int direct = i;
+            while (direct > 3)
+            {
+                direct -= 4;
+            }
 
             //Debug.Log(Mathf.Sign(x)+ " " + Mathf.Sign(y));
             check = new Vector3(transform.position.x + x, transform.position.y + y, 0);
@@ -115,8 +135,16 @@ public class Enemy : MonoBehaviour
                             entity.changeDirection(i);
                             xOffset = Math.Sign(x);
                             yOffset = Math.Sign(y);
+                            Debug.Log(x + "\n" + y);
+                            Debug.Log(xOffset + "\n" + yOffset);
                             //i = 10; //end loop
-                            //Debug.Log(xOffset + " " + yOffset);
+                            //Debug.Log("Next action: Attack") ;
+                        }
+
+                        else if (canDefend && check != next)
+                        {
+                            act = Action.Defend;
+                            //Debug.Log("Next action: Defend");
                         }
 
                         else
@@ -171,6 +199,31 @@ public class Enemy : MonoBehaviour
         }
 
         nextAction = act;
+    }
+
+    private void DecideBlock()
+    {
+        for (int i = 0; i < xs.Length; i++)
+        {
+            int x = xs[i];
+            int y = ys[i];
+            Vector3 check = new Vector3(transform.position.x + x, transform.position.y + y, 0);
+            var collider = Physics2D.OverlapCircle(check, .5f);
+            //is the next position occupied by anyone? if yes, player or enemy? if player, change to attack, if enemy, return current position, if neither, return next coordinate
+            if (collider != null && collider.GetComponent<BoxCollider2D>() != null && collider.GetComponent<BoxCollider2D>())// != rb.GetComponent<BoxCollider2D>())
+            {
+                //Debug.Log("Something near...");
+                if (collider.CompareTag("Player"))
+                {
+                    nextAction = Action.Defend;
+                    entity.isDefending = true;
+                }
+                else
+                {
+                    entity.isDefending = false;
+                }
+            }
+        }
     }
 
     private void OnDrawGizmos()

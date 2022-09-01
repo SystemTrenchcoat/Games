@@ -149,7 +149,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   direction: 1
+  defendDirection: 1
   isAttacking: 0
+  isDefending: 0
   health: 20
   hp: 20
 --- !u!114 &8121299190834622549
@@ -175,6 +177,7 @@ MonoBehaviour:
   yOffset: -1
   xs: 0100000000000000ffffffff000000000200000000000000feffffff00000000
   ys: 000000000100000000000000ffffffff000000000200000000000000feffffff
+  canDefend: 0
 --- !u!114 &3780586963927465056
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,4 +190,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38c47157232c69949816c1e633a799b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  note: Moves around and follow player
+  notes:
+  - Moves around
+  - Follows player from 2 blocks away
+  - Melee attack

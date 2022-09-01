@@ -33,10 +33,10 @@ public class Damage : MonoBehaviour
     {
         //Debug.Log("Scream");
         gameObject.transform.Translate(new Vector3(xOffset, yOffset, 0) * speed);
-        Debug.Log(xOffset + "\n" + yOffset);
-        if (count <=  0)
+        //Debug.Log(xOffset + "\n" + yOffset);
+        if (count <= 0)
         {
-            //Destroy(this.gameObject);
+            Destroy(this.gameObject);
         }
         count -= Time.deltaTime;
         dCount -= Time.deltaTime;
@@ -44,17 +44,17 @@ public class Damage : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //Debug.Log("Collision");
+        Debug.Log(collision);
         //findAttacker();
         if (collision.GetComponent<Entities>() != null && collision.GetComponent<Entities>() != attacker && dCount <= 0)
         {
             Entities entity = collision.GetComponent<Entities>();
             entity.Damage(damage);
             dCount = dCooldown;
-            //Debug.Log(entity.health);
+            Debug.Log(entity.health);
         }
 
-        GameObject.Destroy(this.gameObject);
+        Destroy(this.gameObject);
     }
 
     private void findAttacker()
@@ -65,6 +65,7 @@ public class Damage : MonoBehaviour
         Vector3 currentPosition = transform.position;
         foreach (Entities potentialAttacker in entities)
         {
+            //Debug.Log(potentialAttacker);
             Transform potentialPosition = potentialAttacker.GetComponent<Transform>();
             Vector3 directionToTarget = potentialPosition.position - currentPosition;
             float dSqrToAttacker = directionToTarget.sqrMagnitude;
@@ -76,7 +77,7 @@ public class Damage : MonoBehaviour
                     attack = potentialAttacker;
                     attacker = attack;
                     //Debug.Log(attack.GetComponent<Transform>());
-                    changeDirection(attack.direction.ToString());
+                    changeDirection(attacker.direction.ToString());
                     //Debug.Log(attack);
                 }
             }

@@ -100,9 +100,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attacker: {fileID: 0}
   direction: 1
+  type: 0
   damage: 5
   dCooldown: 1
-  dCount: 1
+  dCount: 0
   cooldown: 1
   count: 0
   speed: 0
