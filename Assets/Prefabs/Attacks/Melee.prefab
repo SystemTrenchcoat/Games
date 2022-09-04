@@ -101,11 +101,15 @@ MonoBehaviour:
   attacker: {fileID: 0}
   direction: 1
   type: 0
+  effect: 0
+  effectDamage: 0
+  effectDuration: 0
+  effectDamageCooldown: 0
   damage: 4
   dCooldown: 1
   dCount: 0
   cooldown: 1
-  count: 0
+  count: 1
   speed: 0
   xOffset: 0
   yOffset: 0

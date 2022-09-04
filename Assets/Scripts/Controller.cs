@@ -39,7 +39,7 @@ public class Controller : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            SceneManager.LoadScene("FirstScene");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
         //Tile-based movement
@@ -75,7 +75,7 @@ public class Controller : MonoBehaviour
         //Debug.Log(entity.direction);
 
         var collider = Physics2D.OverlapCircle(new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, 0), .25f);
-        Debug.Log(!(NextTile(barriers)) && collider != null && collider.tag == "Walkable");
+        //Debug.Log(!(NextTile(barriers)) && collider != null && collider.tag == "Walkable");
         if (!(NextTile(barriers)) && collider != null && collider.tag == "Walkable"
             || !(NextTile(barriers)) && collider == null)
         {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class Damage : MonoBehaviour
 {
@@ -12,14 +13,21 @@ public class Damage : MonoBehaviour
     public Direction direction;// = Direction.Down;
     public Type type;
     public Effect effect;
+
+    public GameObject instanceCreated;
+    public int instanceAmount;
+
     public int effectDamage;
     public float effectDuration;
     public float effectDamageCooldown;
+
     public int damage;// = 5;
     public float dCooldown;
     public float dCount;
+
     public float cooldown;// = 1f;
     public float count;// = 1f;
+
     public float speed;// = .2f;
     public float xOffset;
     public float yOffset;
@@ -31,6 +39,10 @@ public class Damage : MonoBehaviour
         //Debug.Log(direction);
         //Debug.Log(attacker.GetComponent<Entities>().direction);
         findAttacker();
+        for (int i = 0; i < instanceAmount; i++)
+        {
+            Instantiate(instanceCreated, new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, -1), Quaternion.identity);
+        }
     }
 
     // Update is called once per frame
@@ -54,7 +66,21 @@ public class Damage : MonoBehaviour
         if (collision.GetComponent<Entities>() != null && collision.GetComponent<Entities>() != attacker && dCount <= 0)
         {
             Entities entity = collision.GetComponent<Entities>();
-            entity.Damage(damage);
+
+            if (entity.isFlying)
+            {
+                Debug.Log("Uh oh");
+                if (type != Type.Melee)
+                {
+                    entity.Damage(damage);
+                }
+            }
+            else
+            {
+                Debug.Log("hmmm");
+                entity.Damage(damage);
+            }
+
             if (effect == Effect.Poison)
             {
                 entity.inflictEffect((int)effect, effectDamage, effectDuration, effectDamageCooldown);

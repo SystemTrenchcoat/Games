@@ -17,18 +17,28 @@ public class Enemy : MonoBehaviour
 
     public Action nextAction = Action.Move;
     public float actionDelay = 2f;
+    public float blockDuration = 1f;
     public float timer = 2f;
+    public float timerB = 1f;
     public float speed = .2f;
 
     public Tilemap dangers;
     public Tilemap barriers;
 
     public GameObject attack;
+    public bool ignoreDistance;
+
     public float xOffset = 0;
     public float yOffset = -1f;
 
     public int[] xs = {1,0,-1,0};
     public int[] ys = {0, 1, 0, -1};
+
+    public int lowestX = 1;
+    public int lowestY = 1;
+
+    public float maxAtkDistX = 1;
+    public float maxAtkDistY = 1;
 
     public int[] noX;
     public int[] noY;
@@ -41,7 +51,6 @@ public class Enemy : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         entity = GetComponent<Entities>();
-        playerLocation = GameObject.FindGameObjectWithTag("Player").transform.position;
     }
 
     // Update is called once per frame
@@ -59,13 +68,26 @@ public class Enemy : MonoBehaviour
         //    nextAction = Action.Defend;
         //    entity.isDefending = true;  
         //}
-        DecideBlock();
+        entity.isAttacking = false;
+        playerLocation = GameObject.FindGameObjectWithTag("Player").transform.position;
+        
+        if (entity.isDefending)
+        {
+            timerB -= Time.deltaTime;
+        }
+        
+        if (timerB <= 0)
+        {
+            entity.isDefending = false;
+        }
 
         if (timer <= 0)
         {
             //Debug.Log("Something");
-            DecideAction();
+            timerB = blockDuration;
             entity.isAttacking = false;
+            entity.isDefending = false;
+            DecideAction();
 
             //Debug.Log(nextAction);
             if (nextAction == Action.Attack)
@@ -73,6 +95,7 @@ public class Enemy : MonoBehaviour
                 //Debug.Log("Attack");
                 entity.isAttacking = true;
                 //Debug.Log(xOffset + "\n" + yOffset);
+
                 Instantiate(attack, new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, -1), Quaternion.identity);
             }
 
@@ -132,44 +155,52 @@ public class Enemy : MonoBehaviour
                 }
             }
 
-            if (noX.Contains<int>(Math.Sign(x)))
+            if (noX.Contains<int>(Math.Abs(x)))
             {
                 canMove = false;
             }
-            if (noY.Contains<int>(Math.Sign(y)))
+            if (noY.Contains<int>(Math.Abs(y)))
             {
                 canMove = false;
             }
 
             //Debug.Log(Mathf.Sign(x)+ " " + Mathf.Sign(y));
             check = new Vector3(transform.position.x + x, transform.position.y + y, 0);
-            next = new Vector3(transform.position.x + Math.Sign(x), transform.position.y + Math.Sign(y), 0);
+            next = new Vector3(transform.position.x + (Math.Sign(x) * lowestX), transform.position.y + (Math.Sign(y) * lowestY), 0);
             Vector3Int barrierMapTile = barriers.WorldToCell(next);
 
             //is next tile a wall? if no, return coordinate, if yes, return current position
             if (barriers.GetTile(barrierMapTile) == null)
             {
-                //Debug.Log("No wall\n" + i);
+                Debug.Log("No wall\n" + i);
                 var collider = Physics2D.OverlapCircle(check, .5f);
                 //is the next position occupied by anyone? if yes, player or enemy? if player, change to attack, if enemy, return current position, if neither, return next coordinate
                 if (collider != null && collider.GetComponent<BoxCollider2D>() != null && collider.GetComponent<BoxCollider2D>())// != rb.GetComponent<BoxCollider2D>())
                 {
-                    //Debug.Log("Something near...");
+                    Debug.Log("Something near...");
                     if (collider.CompareTag("Player"))
                     {
-                        if (check == next)
+                        Debug.Log(Math.Abs(check.x - transform.position.x) + "\n" + Math.Abs(check.y - transform.position.y));
+                        bool inAtkRng = Math.Abs(check.x - transform.position.x) <= maxAtkDistX && Math.Abs(check.y - transform.position.y) <= maxAtkDistY;
+                        if (inAtkRng || ignoreDistance)
                         {
                             act = Action.Attack;
                             entity.changeDirection(direct);
-                            xOffset = Math.Sign(x);
-                            yOffset = Math.Sign(y);
+                            xOffset = Math.Sign(x) * maxAtkDistX;
+                            yOffset = Math.Sign(y) * maxAtkDistY;
                             //Debug.Log(x + "\n" + y);
                             //Debug.Log(xOffset + "\n" + yOffset);
                             //i = 10; //end loop
                             //Debug.Log("Next action: Attack") ;
                         }
 
-                        else if (canDefend && check != next)
+                        else if ((Math.Abs(next.x - playerLocation.x) == 0 || Math.Abs(playerLocation.x - next.x) == 0)
+                            && (Math.Abs(next.y - playerLocation.y) == 0 || Math.Abs(playerLocation.y - next.y) == 0))
+                        {
+                            canMove = false;
+                        }
+
+                        else if (canDefend && !inAtkRng)
                         {
                             act = Action.Defend;
                             //Debug.Log("Next action: Defend");
@@ -180,8 +211,8 @@ public class Enemy : MonoBehaviour
                             act = Action.Move;
                             skip = true;
                             entity.changeDirection(direct);
-                            xOffset = Math.Sign(x);
-                            yOffset = Math.Sign(y);
+                            xOffset = Math.Sign(x) * lowestX;
+                            yOffset = Math.Sign(y) * lowestY;
                             //i = 10; //end loop
                             //Debug.Log(xOffset + " " + yOffset);
                         }

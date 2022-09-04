@@ -14,6 +14,8 @@ public class Entities : MonoBehaviour
     public float effectDamageCooldown;
     public float effectDamageCount;
     public float effectCooldown;
+    public bool canFly;
+    public bool isFlying = false;
     public bool isAttacking = false;
     public bool isDefending = false;
     public int health = 20;
@@ -153,6 +155,7 @@ public class Entities : MonoBehaviour
     {
         if (!isDefending)
         {
+            Debug.Log(damage);
             health -= damage;
         }
     }

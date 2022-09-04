@@ -13,7 +13,7 @@ public class HarmfulTerrain : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        gameObject.tag = "Walkable";
     }
 
     // Update is called once per frame
@@ -46,13 +46,23 @@ public class HarmfulTerrain : MonoBehaviour
         if (collision.GetComponent<Entities>() != null)
         {
             entity = collision.GetComponent<Entities>();
-            entity.Damage(damage);
-            trigger = true;
+
+            if (entity.canFly)
+            {
+                entity.isFlying = true;
+            }
+
+            else
+            {
+                entity.Damage(damage);
+                trigger = true;
+            }
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        entity.isFlying = false;
         trigger = false;
     }
 }
