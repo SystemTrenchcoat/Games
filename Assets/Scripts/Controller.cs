@@ -11,7 +11,7 @@ public class Controller : MonoBehaviour
 
     Rigidbody2D rb;
 
-    public float speed = .2f;
+    //public float speed = .2f;
 
     public Tilemap dangers;
     public Tilemap barriers;
@@ -74,8 +74,10 @@ public class Controller : MonoBehaviour
         }
         //Debug.Log(entity.direction);
 
-        var collider = Physics2D.OverlapCircle(new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, 0), .5f);
-        if (!(NextTile(barriers)) && collider == null || !(NextTile(barriers)) && collider != null && collider.GetComponent<BoxCollider2D>() == null)
+        var collider = Physics2D.OverlapCircle(new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, 0), .25f);
+        Debug.Log(!(NextTile(barriers)) && collider != null && collider.tag == "Walkable");
+        if (!(NextTile(barriers)) && collider != null && collider.tag == "Walkable"
+            || !(NextTile(barriers)) && collider == null)
         {
             gameObject.transform.Translate(new Vector3(xOffset, yOffset, 0));
         }
@@ -88,9 +90,9 @@ public class Controller : MonoBehaviour
 
         if (Input.GetKeyDown("left ctrl"))
         {
-            Debug.Log("Attack");
+            //Debug.Log("Attack");
             entity.isAttacking = true;
-            Instantiate(attack, new Vector3(transform.position.x + entity.changeXOffset(), transform.position.y + entity.changeYOffset(), 0), Quaternion.identity);
+            Instantiate(attack, new Vector3(transform.position.x + entity.changeXOffset(), transform.position.y + entity.changeYOffset(), -1), Quaternion.identity);
         }
         //end of attack
     }

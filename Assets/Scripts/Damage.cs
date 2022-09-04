@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class Damage : MonoBehaviour
 {
-    public enum Direction { Up, Down, Left, Right };
+    public enum Direction { Right, Up, Left, Down, UL, UR, DL, DR };
     public enum Type { Melee, Ranged };
+    public enum Effect { None, Poison }
     public Entities attacker;
 
     public Direction direction;// = Direction.Down;
     public Type type;
+    public Effect effect;
+    public int effectDamage;
+    public float effectDuration;
+    public float effectDamageCooldown;
     public int damage;// = 5;
     public float dCooldown;
     public float dCount;
@@ -32,7 +37,7 @@ public class Damage : MonoBehaviour
     void FixedUpdate()
     {
         //Debug.Log("Scream");
-        gameObject.transform.Translate(new Vector3(xOffset, yOffset, 0) * speed);
+        gameObject.transform.Translate(new Vector3(xOffset, yOffset, -1) * speed);
         //Debug.Log(xOffset + "\n" + yOffset);
         if (count <= 0)
         {
@@ -44,14 +49,18 @@ public class Damage : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log(collision);
+        //Debug.Log(collision);
         //findAttacker();
         if (collision.GetComponent<Entities>() != null && collision.GetComponent<Entities>() != attacker && dCount <= 0)
         {
             Entities entity = collision.GetComponent<Entities>();
             entity.Damage(damage);
+            if (effect == Effect.Poison)
+            {
+                entity.inflictEffect((int)effect, effectDamage, effectDuration, effectDamageCooldown);
+            }
             dCount = dCooldown;
-            Debug.Log(entity.health);
+            //Debug.Log(entity.health);
         }
 
         Destroy(this.gameObject);
@@ -109,6 +118,30 @@ public class Damage : MonoBehaviour
             direction = Direction.Left;
             yOffset = 0;
             xOffset = -1;
+        }
+        else if (dir.Equals("UL"))
+        {
+            direction = Direction.UL;
+            yOffset = 1;
+            xOffset = -1;
+        }
+        else if (dir.Equals("UR"))
+        {
+            direction = Direction.UR;
+            yOffset = 1;
+            xOffset = 1;
+        }
+        else if (dir.Equals("DL"))
+        {
+            direction = Direction.DL;
+            yOffset = -1;
+            xOffset = -1;
+        }
+        else if (dir.Equals("DR"))
+        {
+            direction = Direction.DR;
+            yOffset = -1;
+            xOffset = 1;
         }
     }
 }

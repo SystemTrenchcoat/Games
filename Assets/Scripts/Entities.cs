@@ -4,10 +4,16 @@ using UnityEngine;
 
 public class Entities : MonoBehaviour
 {
-    public enum Direction { Up, Down, Left, Right };
+    public enum Direction { Right, Up, Left, Down, UL, UR, DL, DR };
+    public enum Effect { None, Poison };
 
     public Direction direction = Direction.Down;
     public Direction defendDirection = Direction.Up;
+    public Effect effect;
+    public int effectDamage;
+    public float effectDamageCooldown;
+    public float effectDamageCount;
+    public float effectCooldown;
     public bool isAttacking = false;
     public bool isDefending = false;
     public int health = 20;
@@ -31,6 +37,32 @@ public class Entities : MonoBehaviour
         if (health <= 0)
         {
             Destroy(this.gameObject);
+        }
+
+        if (effect != Effect.None)
+        {
+            if (effectCooldown > 0)
+            {
+                effectCooldown -= Time.deltaTime;
+                if (effectDamageCooldown > 0)
+                {
+                    if (effectDamageCount <= 0)
+                    {
+                        health -= effectDamage;
+                        effectDamageCount = effectDamageCooldown;
+                    }
+                    effectDamageCount -= Time.deltaTime;
+                }
+            }
+
+            else
+            {
+                effect = Effect.None;
+                effectCooldown = 0;
+                effectDamage = 0;
+                effectDamageCooldown = 0;
+                effectDamageCount = 0;
+            }
         }
     }
 
@@ -56,30 +88,31 @@ public class Entities : MonoBehaviour
             direction = Direction.Left;
             defendDirection = Direction.Right;
         }
+        else if (dir.Equals("UL"))
+        {
+            direction = Direction.UL;
+            defendDirection = Direction.DR;
+        }
+        else if (dir.Equals("UR"))
+        {
+            direction = Direction.UR;
+            defendDirection = Direction.DL;
+        }
+        else if (dir.Equals("DL"))
+        {
+            direction = Direction.DL;
+            defendDirection = Direction.UR;
+        }
+        else if (dir.Equals("DR"))
+        {
+            direction = Direction.DR;
+            defendDirection = Direction.UL;
+        }
     }
 
     public void changeDirection(int dir)
     {
-        if (dir == 3)
-        {
-            direction = Direction.Down;
-            defendDirection = Direction.Up;
-        }
-        else if (dir == 1)
-        {
-            direction = Direction.Up;
-            defendDirection = Direction.Down;
-        }
-        else if (dir == 0)
-        {
-            direction = Direction.Right;
-            defendDirection = Direction.Left;
-        }
-        else if (dir == 2)
-        {
-            direction = Direction.Left;
-            defendDirection = Direction.Right;
-        }
+        direction = (Direction)dir;
     }
 
     public int defendDirectionOffsetX()
@@ -156,5 +189,14 @@ public class Entities : MonoBehaviour
         }
 
         return y;
+    }
+
+    public void inflictEffect (int eff, int dmg, float cooldown, float dmgCooldown)
+    {
+        effect = (Effect)eff;
+        effectCooldown = cooldown;
+        effectDamage = dmg;
+        effectDamageCooldown = dmgCooldown;
+        effectDamageCount = 0;
     }
 }

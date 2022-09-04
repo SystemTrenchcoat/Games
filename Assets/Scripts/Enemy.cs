@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,7 +30,11 @@ public class Enemy : MonoBehaviour
     public int[] xs = {1,0,-1,0};
     public int[] ys = {0, 1, 0, -1};
 
+    public int[] noX;
+    public int[] noY;
+
     public bool canDefend = false;
+    public bool canDiag = false;
 
     // Start is called before the first frame update
     void Start()
@@ -68,7 +73,7 @@ public class Enemy : MonoBehaviour
                 //Debug.Log("Attack");
                 entity.isAttacking = true;
                 //Debug.Log(xOffset + "\n" + yOffset);
-                Instantiate(attack, new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, 0), Quaternion.identity);
+                Instantiate(attack, new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, -1), Quaternion.identity);
             }
 
             //gradually moves enemy to location
@@ -96,6 +101,7 @@ public class Enemy : MonoBehaviour
 
         entity.isDefending = false;
         bool skip = false;
+        bool canMove = true;
         Vector3 check;
         Vector3 next;
 
@@ -105,12 +111,34 @@ public class Enemy : MonoBehaviour
 
         for (int i = 0; i < xs.Length; i++)
         {
+            canMove = true;
+
             int x = xs[i];
             int y = ys[i];
             int direct = i;
-            while (direct > 3)
+            if (!canDiag)
             {
-                direct -= 4;
+                while (direct > 3)
+                {
+                    direct -= 4;
+                }
+            }
+
+            else
+            {
+                while (direct > 7)
+                {
+                    direct -= 8;
+                }
+            }
+
+            if (noX.Contains<int>(Math.Sign(x)))
+            {
+                canMove = false;
+            }
+            if (noY.Contains<int>(Math.Sign(y)))
+            {
+                canMove = false;
             }
 
             //Debug.Log(Mathf.Sign(x)+ " " + Mathf.Sign(y));
@@ -132,11 +160,11 @@ public class Enemy : MonoBehaviour
                         if (check == next)
                         {
                             act = Action.Attack;
-                            entity.changeDirection(i);
+                            entity.changeDirection(direct);
                             xOffset = Math.Sign(x);
                             yOffset = Math.Sign(y);
-                            Debug.Log(x + "\n" + y);
-                            Debug.Log(xOffset + "\n" + yOffset);
+                            //Debug.Log(x + "\n" + y);
+                            //Debug.Log(xOffset + "\n" + yOffset);
                             //i = 10; //end loop
                             //Debug.Log("Next action: Attack") ;
                         }
@@ -147,21 +175,27 @@ public class Enemy : MonoBehaviour
                             //Debug.Log("Next action: Defend");
                         }
 
-                        else
+                        else if (canMove)
                         {
                             act = Action.Move;
                             skip = true;
-                            entity.changeDirection(i);
+                            entity.changeDirection(direct);
                             xOffset = Math.Sign(x);
                             yOffset = Math.Sign(y);
                             //i = 10; //end loop
                             //Debug.Log(xOffset + " " + yOffset);
                         }
+
+                        else
+                        {
+                            canMove = false;
+                            //Debug.Log("Ally near\n" + collider);
+                        }
                     }
 
                     else
                     {
-                        next = new Vector3(transform.position.x, transform.position.y, 0);
+                        canMove = false;
                         //Debug.Log("Ally near\n" + collider);
                     }
                     //change direction to this direction and attack
@@ -169,14 +203,17 @@ public class Enemy : MonoBehaviour
 
                 else
                 {
-                    locations.Add(next);
+                    if (canMove)
+                    {
+                        locations.Add(next);
+                    }
                     //Debug.Log(next);
                 }
             }
 
             else
             {
-                next = new Vector3(transform.position.x, transform.position.y, 0);
+                canMove = false;
                 //Debug.Log("There's a wall");
             }
         }
@@ -187,7 +224,23 @@ public class Enemy : MonoBehaviour
             {
                 //Debug.Log(xOffset + " " + yOffset);
                 nextLocation = locations[Random.Range(0, locations.Count)];
-                entity.changeDirection(locations.IndexOf(nextLocation));
+                int direct = locations.IndexOf(nextLocation);
+                if (!canDiag)
+                {
+                    while (direct > 3)
+                    {
+                        direct -= 4;
+                    }
+                }
+
+                else
+                {
+                    while (direct > 7)
+                    {
+                        direct -= 8;
+                    }
+                }
+                entity.changeDirection(direct);
                 xOffset = nextLocation.x - transform.position.x;
                 yOffset = nextLocation.y - transform.position.y;
             }

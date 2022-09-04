@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Entity
   - Enemy
+  - Walkable
   layers:
   - Default
   - TransparentFX
