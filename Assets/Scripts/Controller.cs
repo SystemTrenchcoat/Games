@@ -43,6 +43,12 @@ public class Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (dangers == null)
+        {
+            dangers = GameObject.Find("Dangers").GetComponent<Tilemap>();
+            barriers = GameObject.Find("Barriers").GetComponent<Tilemap>();
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
