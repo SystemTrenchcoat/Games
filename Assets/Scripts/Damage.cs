@@ -7,7 +7,7 @@ public class Damage : MonoBehaviour
 {
     public enum Direction { Right, Up, Left, Down, UL, UR, DL, DR };
     public enum Type { Melee, Ranged };
-    public enum Effect { None, Poison }
+    public enum Effect { None, Poison };
     public Entities attacker;
 
     public Direction direction;// = Direction.Down;
@@ -66,10 +66,10 @@ public class Damage : MonoBehaviour
         if (collision.GetComponent<Entities>() != null && collision.GetComponent<Entities>() != attacker && dCount <= 0)
         {
             Entities entity = collision.GetComponent<Entities>();
-
+            //Debug.Log(effect);
             if (entity.isFlying)
             {
-                Debug.Log("Uh oh");
+                //Debug.Log("Uh oh");
                 if (type != Type.Melee)
                 {
                     entity.Damage(damage);
@@ -77,12 +77,13 @@ public class Damage : MonoBehaviour
             }
             else
             {
-                Debug.Log("hmmm");
+                //Debug.Log("hmmm");
                 entity.Damage(damage);
             }
 
             if (effect == Effect.Poison)
             {
+                Debug.Log("Poisn");
                 entity.inflictEffect((int)effect, effectDamage, effectDuration, effectDamageCooldown);
             }
             dCount = dCooldown;

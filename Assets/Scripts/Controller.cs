@@ -13,6 +13,10 @@ public class Controller : MonoBehaviour
 
     //public float speed = .2f;
 
+    public enum charClass { Warrior, Archer};
+
+    public charClass chara;
+
     public Tilemap dangers;
     public Tilemap barriers;
 
@@ -32,6 +36,8 @@ public class Controller : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         entity = GetComponent<Entities>();
+        dangers = GameObject.Find("Dangers").GetComponent<Tilemap>();
+        barriers = GameObject.Find("Barriers").GetComponent<Tilemap>();
     }
 
     // Update is called once per frame
@@ -76,7 +82,7 @@ public class Controller : MonoBehaviour
 
         var collider = Physics2D.OverlapCircle(new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, 0), .25f);
         //Debug.Log(!(NextTile(barriers)) && collider != null && collider.tag == "Walkable");
-        if (!(NextTile(barriers)) && collider != null && collider.tag == "Walkable"
+        if (!(NextTile(barriers)) && collider != null && (collider.tag == "Walkable" || collider.tag == "Collectable")
             || !(NextTile(barriers)) && collider == null)
         {
             gameObject.transform.Translate(new Vector3(xOffset, yOffset, 0));

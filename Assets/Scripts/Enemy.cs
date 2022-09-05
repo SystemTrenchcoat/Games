@@ -51,6 +51,8 @@ public class Enemy : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         entity = GetComponent<Entities>();
+        dangers = GameObject.Find("Dangers").GetComponent<Tilemap>();
+        barriers = GameObject.Find("Barriers").GetComponent<Tilemap>();
     }
 
     // Update is called once per frame
@@ -172,15 +174,15 @@ public class Enemy : MonoBehaviour
             //is next tile a wall? if no, return coordinate, if yes, return current position
             if (barriers.GetTile(barrierMapTile) == null)
             {
-                Debug.Log("No wall\n" + i);
+                //Debug.Log("No wall\n" + i);
                 var collider = Physics2D.OverlapCircle(check, .5f);
                 //is the next position occupied by anyone? if yes, player or enemy? if player, change to attack, if enemy, return current position, if neither, return next coordinate
                 if (collider != null && collider.GetComponent<BoxCollider2D>() != null && collider.GetComponent<BoxCollider2D>())// != rb.GetComponent<BoxCollider2D>())
                 {
-                    Debug.Log("Something near...");
+                    //Debug.Log("Something near...");
                     if (collider.CompareTag("Player"))
                     {
-                        Debug.Log(Math.Abs(check.x - transform.position.x) + "\n" + Math.Abs(check.y - transform.position.y));
+                        //Debug.Log(Math.Abs(check.x - transform.position.x) + "\n" + Math.Abs(check.y - transform.position.y));
                         bool inAtkRng = Math.Abs(check.x - transform.position.x) <= maxAtkDistX && Math.Abs(check.y - transform.position.y) <= maxAtkDistY;
                         if (inAtkRng || ignoreDistance)
                         {
