@@ -25,7 +25,6 @@ public class Enemy : MonoBehaviour
     public Tilemap dangers;
     public Tilemap barriers;
 
-    public GameObject attack;
     public bool ignoreDistance;
 
     public float xOffset = 0;
@@ -98,7 +97,7 @@ public class Enemy : MonoBehaviour
                 entity.isAttacking = true;
                 //Debug.Log(xOffset + "\n" + yOffset);
 
-                Instantiate(attack, new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, -1), Quaternion.identity);
+                Instantiate(entity.attack, new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, -1), Quaternion.identity);
             }
 
             //gradually moves enemy to location

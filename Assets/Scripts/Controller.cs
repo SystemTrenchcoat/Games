@@ -20,7 +20,6 @@ public class Controller : MonoBehaviour
     public Tilemap dangers;
     public Tilemap barriers;
 
-    public GameObject attack;
     public float xOffset = 0;
     public float yOffset = 0;
 
@@ -104,7 +103,7 @@ public class Controller : MonoBehaviour
         {
             //Debug.Log("Attack");
             entity.isAttacking = true;
-            Instantiate(attack, new Vector3(transform.position.x + entity.changeXOffset(), transform.position.y + entity.changeYOffset(), -1), Quaternion.identity);
+            Instantiate(entity.attack, new Vector3(transform.position.x + entity.changeXOffset(), transform.position.y + entity.changeYOffset(), -1), Quaternion.identity);
         }
         //end of attack
     }

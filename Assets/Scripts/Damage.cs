@@ -16,6 +16,9 @@ public class Damage : MonoBehaviour
 
     public GameObject instanceCreated;
     public int instanceAmount;
+    public string special;
+    public float[] instancesXs;
+    public float[] instancesYs;
 
     public int effectDamage;
     public float effectDuration;
@@ -41,7 +44,50 @@ public class Damage : MonoBehaviour
         findAttacker();
         for (int i = 0; i < instanceAmount; i++)
         {
+            //checks if there are any specific coordinates to put things
+            if (instancesXs.Length > 0)
+            {
+                int e = i;
+                //checks if i is too big to be in the list of xs
+                //if so, subtracts by length until it is within range and makes offset whatever that number is
+                while (e >= instancesXs.Length)
+                {
+                    e -= instancesXs.Length;
+                }
+                
+                xOffset = instancesXs[e];
+            }
+
+            if (instancesYs.Length > 0)
+            {
+                int e = i;
+                //checks if i is too big to be in the list of ys
+                //if so, subtracts by length until it is within range and makes offset whatever that number is
+                while (e >= instancesYs.Length)
+                {
+                    e -= instancesYs.Length;
+                }
+
+                yOffset = instancesYs[e];
+            }
+
+            if (special == "Trigger")
+            {
+                xOffset = xOffset * -1;
+                yOffset = yOffset * -1;
+            }
+
+            if (special == "Weapon")
+            {
+                instanceCreated = attacker.weapon;
+            }
+
             Instantiate(instanceCreated, new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, -1), Quaternion.identity);
+        }
+
+        if (special == "Trigger")
+        {
+            Destroy(this.gameObject);
         }
     }
 
@@ -83,14 +129,16 @@ public class Damage : MonoBehaviour
 
             if (effect == Effect.Poison)
             {
-                Debug.Log("Poisn");
+                //Debug.Log("Poisn");
                 entity.inflictEffect((int)effect, effectDamage, effectDuration, effectDamageCooldown);
             }
             dCount = dCooldown;
             //Debug.Log(entity.health);
+            if (special != "Trigger")
+            {
+                Destroy(this.gameObject);
+            }
         }
-
-        Destroy(this.gameObject);
     }
 
     private void findAttacker()

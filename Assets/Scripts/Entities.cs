@@ -9,15 +9,21 @@ public class Entities : MonoBehaviour
 
     public Direction direction = Direction.Down;
     public Direction defendDirection = Direction.Up;
+
     public Effect effect;
     public int effectDamage;
     public float effectDamageCooldown;
     public float effectDamageCount;
     public float effectCooldown;
+
     public bool canFly;
     public bool isFlying = false;
     public bool isAttacking = false;
     public bool isDefending = false;
+
+    public GameObject attack;
+    public GameObject weapon;
+
     public int health = 20;
     public int hp = 20;
 
