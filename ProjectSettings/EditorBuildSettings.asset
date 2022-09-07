@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/PoisonWeapons.unity
     guid: f88838e596eea964cb9353ba124e6f34
+  - enabled: 1
+    path: Assets/Scenes/NewAbility.unity
+    guid: 6f8fb50f5a9473344831e370f9062b65
   m_configObjects: {}
